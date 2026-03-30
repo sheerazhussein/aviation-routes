@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Container, Typography, Button, Box } from '@mui/material'
+import AddAirportModal from '../components/AddAirportModal'
 
 interface Airport {
     id: number
@@ -12,11 +13,16 @@ interface Airport {
 
 function AirportsPage() {
     const [airports, setAirports] = useState<Airport[]>([])
+    const [modalOpen, setModalOpen] = useState(false)
 
-    useEffect(() => {
+    const fetchAirports = () => {
         axios.get('http://localhost:8081/api/airports')
             .then(res => setAirports(res.data))
             .catch(err => console.error(err))
+    }
+
+    useEffect(() => {
+        fetchAirports()
     }, [])
 
     return (
@@ -25,7 +31,7 @@ function AirportsPage() {
                 <Typography variant="h4" fontWeight="bold">
                     ✈️ Airports
                 </Typography>
-                <Button variant="contained" color="primary">
+                <Button variant="contained" color="primary" onClick={() => setModalOpen(true)}>
                     Add Airport
                 </Button>
             </Box>
@@ -50,6 +56,12 @@ function AirportsPage() {
                     No airports yet. Add one!
                 </Typography>
             )}
+
+            <AddAirportModal
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onAirportAdded={fetchAirports}
+            />
         </Container>
     )
 }
